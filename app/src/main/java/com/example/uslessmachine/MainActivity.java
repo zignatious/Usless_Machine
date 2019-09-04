@@ -2,6 +2,7 @@ package com.example.uslessmachine;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.widget.ContentLoadingProgressBar;
 
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
@@ -15,14 +16,20 @@ import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+    private TextView text;
     private Switch switchUsless;
     private Button buttonSelfDestruct;
     private Button buttonDoSomething;
     private ConstraintLayout constraintLayout;
+    private ProgressBar loadingProgressBar;
+    private int progress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
         buttonSelfDestruct = findViewById(R.id.button_main_selfdestruct);
         buttonDoSomething = findViewById(R.id.button_main_busy);
         constraintLayout = findViewById(R.id.constraint_layout_main);
+        loadingProgressBar = findViewById(R.id.progress_main_load);
+        text = findViewById(R.id.text_main_loading);
     }
 
 
@@ -87,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
                   buttonSelfDestruct.setOnClickListener(new View.OnClickListener() {
                       @Override
                       public void onClick(View view) {
+                      buttonSelfDestruct.setEnabled(false);
                           new CountDownTimer(10000, 1000) {
 
                               public void onTick(long millisUntilFinished) {
@@ -119,10 +129,46 @@ public class MainActivity extends AppCompatActivity {
                       }
                   });
 
+        buttonDoSomething.setOnClickListener(new View.OnClickListener() {
 
+            @Override
+            public void onClick(View view) {
+                buttonSelfDestruct.setVisibility(View.INVISIBLE);
+                buttonDoSomething.setVisibility(View.INVISIBLE);
+                switchUsless.setVisibility(View.INVISIBLE);
+                loadingProgressBar.setVisibility(View.VISIBLE);
+                text.setVisibility(View.VISIBLE);
+                progress = 0;
+                new CountDownTimer(10100, 100) {
+
+
+
+                    public void onTick(long millisUntilFinished) {
+                        progress += 1;
+                        loadingProgressBar.setProgress(progress);
+                        text.setText(progress + "/"+loadingProgressBar.getMax());
+
+
+                    }
+
+
+                    public void onFinish() {
+                        buttonSelfDestruct.setVisibility(View.VISIBLE);
+                        buttonDoSomething.setVisibility(View.VISIBLE);
+                        switchUsless.setVisibility(View.VISIBLE);
+                        loadingProgressBar.setVisibility(View.INVISIBLE);
+                        text.setVisibility(View.INVISIBLE);
+                    }
+                }.start();
+
+            }
+        });
+
+
+                    }
 
 
     }
 
-}
+
 
